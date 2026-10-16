@@ -17,7 +17,7 @@ test("standalone registry has unique tool names", () => {
   const names = tools.map((tool) => tool.name);
   assert.ok(names.length >= 15, `expected migrated core tools, got ${names.length}`);
   assert.equal(new Set(names).size, names.length);
-  for (const name of ["open_miz", "new_miz", "save_miz", "list_groups", "get_route", "latlon_to_dcs", "get_mission_options", "list_weapon_settings", "check_spawn_conflicts"]) {
+  for (const name of ["open_miz", "new_miz", "save_miz", "list_groups", "get_route", "latlon_to_dcs", "get_mission_options", "list_weapon_settings", "check_spawn_conflicts", "list_templates", "add_template_group"]) {
     assert.ok(names.includes(name), `missing ${name}`);
   }
 });
@@ -57,4 +57,15 @@ test("mission options tools safely read and update nested values", async () => {
     ),
     /Invalid mission option path|Invalid option path/,
   );
+});
+
+test("template discovery works on an empty mission without fabricating templates", async () => {
+  const sessions = new SessionStore();
+  const session = await MizSession.create("Caucasus");
+  sessions.add(session);
+  const tool = createToolRegistry().get("list_templates");
+  assert.ok(tool);
+  const result = await tool.handler({ session_id: session.sessionId }, { sessions });
+  assert.equal(result.count, 0);
+  assert.deepEqual(result.templates, []);
 });

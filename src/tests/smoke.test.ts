@@ -17,7 +17,7 @@ test("standalone registry has unique tool names", () => {
   const names = tools.map((tool) => tool.name);
   assert.ok(names.length >= 15, `expected migrated core tools, got ${names.length}`);
   assert.equal(new Set(names).size, names.length);
-  for (const name of ["open_miz", "new_miz", "save_miz", "list_groups", "get_route", "latlon_to_dcs"]) {
+  for (const name of ["open_miz", "new_miz", "save_miz", "list_groups", "get_route", "latlon_to_dcs", "get_mission_options", "list_weapon_settings", "check_spawn_conflicts"]) {
     assert.ok(names.includes(name), `missing ${name}`);
   }
 });

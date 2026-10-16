@@ -54,7 +54,7 @@ export const standaloneDiagnosticsTools: ToolDefinition[] = [
     async handler(args: { session_id_a: string; session_id_b: string; max_changes?: number }, ctx) {
       const a = ctx.sessions.get(args.session_id_a);
       const b = ctx.sessions.get(args.session_id_b);
-      return diffMissions(a, b, { maxChanges: args.max_changes });
+      return diffMissions(a, b, { maxChangesPerItem: args.max_changes });
     },
   },
 ];

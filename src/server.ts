@@ -14,6 +14,8 @@ import { rawTools } from "./tools/raw.js";
 import { geometryTools } from "./tools/geometry.js";
 import { briefingTools } from "./tools/briefing.js";
 import { historicalTools } from "./tools/historical.js";
+import { missionIntegrityTools } from "./tools/mission_integrity.js";
+import { missionAuthoringTools } from "./tools/mission_authoring.js";
 
 export const SERVER_NAME = "bns-dcs-mcp";
 export const SERVER_VERSION = "0.1.0";
@@ -33,6 +35,8 @@ export function createToolRegistry(): ToolRegistry {
   registry.registerAll(geometryTools);
   registry.registerAll(briefingTools);
   registry.registerAll(historicalTools);
+  registry.registerAll(missionIntegrityTools);
+  registry.registerAll(missionAuthoringTools);
   return registry;
 }
 

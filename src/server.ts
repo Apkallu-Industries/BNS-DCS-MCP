@@ -20,6 +20,7 @@ import { dcsExportTools } from "./tools/dcs_export.js";
 import { samSiteTools } from "./tools/sam_sites.js";
 import { missionOptionTools } from "./tools/mission_options.js";
 import { weaponSettingsTools } from "./tools/weapon_settings.js";
+import { templateTools } from "./tools/templates.js";
 
 export const SERVER_NAME = "bns-dcs-mcp";
 export const SERVER_VERSION = "0.1.0";
@@ -45,6 +46,7 @@ export function createToolRegistry(): ToolRegistry {
   registry.registerAll(samSiteTools);
   registry.registerAll(missionOptionTools);
   registry.registerAll(weaponSettingsTools);
+  registry.registerAll(templateTools);
   return registry;
 }
 

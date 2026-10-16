@@ -92,4 +92,4 @@ Added source modules for Lua script linting, mission SVG overview rendering, and
 - `render_mission_overview` — returns an SVG overview and summary for a loaded mission.
 - `diff_miz` — compares two open mission sessions.
 
-The Lua lint implementation uses the `fengari` dependency. CI is being checked against the latest commits before this batch is considered verified.
+The Lua lint implementation uses the `fengari` dependency. Linux CI passed after adding the Fengari declaration. The Windows workflow also successfully compiled the native launcher, assembled the portable package, completed an MCP stdio handshake with 97 unique tools, and uploaded the ZIP artifact for the crossover commit. Real DCS integration remains outstanding.

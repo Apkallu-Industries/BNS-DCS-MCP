@@ -6,9 +6,9 @@ The goal is to give Claude and other authorized MCP clients a stable DCS integra
 
 ## Status
 
-**Bootstrap / discovery phase. Not yet a release-ready server.**
+**Active implementation / first crossover PR. Not yet a release-ready DCS-tested server.**
 
-This repository was created as a clean destination. Initial work should establish architecture, inventory reusable code, implement and test the server, then package a Windows distribution. Do not claim capabilities are implemented until the tools and tests exist.
+The standalone TypeScript MCP host and first migrated capability batches are now implemented on [PR #1](https://github.com/Apkallu-Industries/BNS-DCS-MCP/pull/1). The current branch registers 97 unique tools, with CI covering TypeScript compilation and smoke tests. A Windows portable-package workflow now builds a private Node runtime plus native stdio launcher and verifies an MCP handshake. The executable and DCS runtime behavior are not release-verified until the Windows workflow passes and a real Windows/DCS test is completed.
 
 ## Design principles
 
@@ -40,4 +40,4 @@ This repository was created as a clean destination. Initial work should establis
 
 ## Development
 
-The initial commit is documentation only. Add the implementation after the source audit and architecture decision. See [docs/CAPABILITY-GAP-AUDIT.md](docs/CAPABILITY-GAP-AUDIT.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Development is on the feature branch until the latest CI and Windows package checks pass. See [docs/CAPABILITY-GAP-AUDIT.md](docs/CAPABILITY-GAP-AUDIT.md), [docs/CROSSOVER-LEDGER.md](docs/CROSSOVER-LEDGER.md), and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

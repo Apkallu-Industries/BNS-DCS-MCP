@@ -65,11 +65,11 @@ export async function loadTerrainGrid(path: string): Promise<TerrainGrid> {
   }
   return {
     coordinateSystem: "DCS_METRES",
-    origin: value.origin,
-    spacing: value.spacing,
-    width: value.width,
-    height: value.height,
-    elevations,
+    origin: value.origin as XY,
+    spacing: value.spacing as XY,
+    width: value.width as number,
+    height: value.height as number,
+    elevations: elevations as number[][],
   };
 }
 

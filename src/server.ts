@@ -22,6 +22,7 @@ import { missionOptionTools } from "./tools/mission_options.js";
 import { weaponSettingsTools } from "./tools/weapon_settings.js";
 import { templateTools } from "./tools/templates.js";
 import { standaloneDiagnosticsTools } from "./tools/standalone_diagnostics.js";
+import { terrainTools } from "./tools/terrain.js";
 
 export const SERVER_NAME = "bns-dcs-mcp";
 export const SERVER_VERSION = "0.1.0";
@@ -49,6 +50,7 @@ export function createToolRegistry(): ToolRegistry {
   registry.registerAll(weaponSettingsTools);
   registry.registerAll(templateTools);
   registry.registerAll(standaloneDiagnosticsTools);
+  registry.registerAll(terrainTools);
   return registry;
 }
 

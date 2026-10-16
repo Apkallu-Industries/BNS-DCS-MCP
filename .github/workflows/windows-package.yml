@@ -51,6 +51,11 @@ jobs:
           if (!(Test-Path (Join-Path $pkg 'app/node_modules/@modelcontextprotocol/sdk'))) {
             throw 'MCP SDK production dependency was not packaged'
           }
+      - name: Validate Claude Desktop helper syntax
+        shell: pwsh
+        run: |
+          $null = [scriptblock]::Create((Get-Content 'package-out/configure-claude.ps1' -Raw))
+          Write-Host 'Claude Desktop helper PowerShell syntax OK'
       - name: Verify packaged executable over MCP stdio
         shell: pwsh
         run: node packaging/windows/verify-launcher.mjs package-out/BNS-DCS-MCP.exe

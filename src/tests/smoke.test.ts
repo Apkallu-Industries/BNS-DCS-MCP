@@ -6,6 +6,7 @@ import { SessionStore } from "../miz/SessionStore.js";
 import { createToolRegistry } from "../server.js";
 import { missionTools } from "../tools/mission.js";
 import { missionOptionTools } from "../tools/mission_options.js";
+import { nearestRoad, sampleGrid, type RoadReference, type TerrainGrid } from "../terrain/TerrainReference.js";
 
 test("Lua parser preserves positional array entries", () => {
   const parsed = LuaParser.parse('test = { "alpha", "bravo", [3] = "charlie" }');
@@ -15,9 +16,9 @@ test("Lua parser preserves positional array entries", () => {
 test("standalone registry has unique tool names", () => {
   const tools = createToolRegistry().list();
   const names = tools.map((tool) => tool.name);
-  assert.equal(names.length, 97, `registry contract is exactly 97 tools; got ${names.length}`);
+  assert.equal(names.length, 100, `registry contract is exactly 100 tools; got ${names.length}`);
   assert.equal(new Set(names).size, names.length);
-  for (const name of ["open_miz", "new_miz", "save_miz", "list_groups", "get_route", "latlon_to_dcs", "get_mission_options", "list_weapon_settings", "check_spawn_conflicts", "list_templates", "add_template_group", "lint_mission_scripts", "render_mission_overview", "diff_miz"]) {
+  for (const name of ["open_miz", "new_miz", "save_miz", "list_groups", "get_route", "latlon_to_dcs", "get_mission_options", "list_weapon_settings", "check_spawn_conflicts", "list_templates", "add_template_group", "lint_mission_scripts", "render_mission_overview", "diff_miz", "sample_terrain_height", "validate_terrain_placement", "find_road_near"]) {
     assert.ok(names.includes(name), `missing ${name}`);
   }
 });
@@ -68,4 +69,31 @@ test("template discovery works on an empty mission without fabricating templates
   const result = await tool.handler({ session_id: session.sessionId }, { sessions });
   assert.equal(result.count, 0);
   assert.deepEqual(result.templates, []);
+});
+
+test("terrain grid interpolates elevation and estimates slope", () => {
+  const grid: TerrainGrid = {
+    coordinateSystem: "DCS_METRES",
+    origin: { x: 0, y: 0 },
+    spacing: { x: 100, y: 100 },
+    width: 2,
+    height: 2,
+    elevations: [[0, 10], [0, 10]],
+  };
+  const result = sampleGrid(grid, { x: 50, y: 50 });
+  assert.equal(result.elevation_m, 5);
+  assert.ok(Math.abs(result.slope_degrees - 5.71) < 0.02);
+  assert.throws(() => sampleGrid(grid, { x: 300, y: 0 }), /outside/);
+});
+
+test("road lookup returns the closest point on a polyline segment", () => {
+  const roads: RoadReference = {
+    coordinateSystem: "DCS_METRES",
+    roads: [{ id: "r1", name: "test road", points: [{ x: 0, y: 0 }, { x: 100, y: 0 }] }],
+  };
+  const result = nearestRoad(roads, { x: 40, y: 25 });
+  assert.ok(result);
+  assert.equal(result.road_id, "r1");
+  assert.deepEqual(result.nearest_point, { x: 40, y: 0 });
+  assert.equal(result.distance_m, 25);
 });

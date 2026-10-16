@@ -66,3 +66,14 @@ GitHub Actions completed a successful TypeScript build and smoke-test run for co
 mission-editing batches through mission-authoring and mission-integrity registration.
 Subsequent SAM-site and DCS-export registration commits are running through CI and
 must be checked separately before declaring the latest branch state green.
+
+
+## Third migration batch — new standalone tools
+
+The branch now also includes two new BNS-side tool implementations:
+
+- `mission_options.ts`: `get_mission_options`, `get_mission_option`, and `set_mission_option` operate on the .miz package's separate `options` Lua table. Dotted paths reject prototype-related segments; changes mark the session dirty and are persisted through the existing `save_miz` flow.
+- `weapon_settings.ts`: `list_weapon_settings` inventories the current mission's aircraft loadouts, including pylon station, configured CLSID, fuel, countermeasures, and gun ammunition. It explicitly does not claim to be a complete database of all weapons installed in DCS.
+
+Smoke tests cover nested mission-option writes, dirty-state marking, rejection of unsafe option paths, tool registration and the existing mission validation path. GitHub Actions successfully built and tested commit
+`8df7d8ce9aa6808d372374971ebf843d2a4456a9`. The later docs-only ledger update is also expected to pass CI; check its run before merging.

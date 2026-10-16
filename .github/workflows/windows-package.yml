@@ -43,6 +43,10 @@ jobs:
           Copy-Item $node (Join-Path $pkg 'runtime/node.exe')
           Copy-Item 'dist' (Join-Path $pkg 'app/dist') -Recurse
           Copy-Item 'package.json' (Join-Path $pkg 'app/package.json')
+          New-Item -ItemType Directory -Path (Join-Path $pkg 'docs') -Force | Out-Null
+          Copy-Item 'packaging/windows/README.md' (Join-Path $pkg 'README.md')
+          Copy-Item 'packaging/windows/configure-claude.ps1' (Join-Path $pkg 'configure-claude.ps1')
+          Copy-Item 'docs/CAPABILITY-GAP-AUDIT.md' (Join-Path $pkg 'docs/CAPABILITY-GAP-AUDIT.md')
           npm install --omit=dev --no-audit --no-fund --prefix (Join-Path $pkg 'app')
           if (!(Test-Path (Join-Path $pkg 'app/node_modules/@modelcontextprotocol/sdk'))) {
             throw 'MCP SDK production dependency was not packaged'

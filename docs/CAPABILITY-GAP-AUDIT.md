@@ -26,9 +26,9 @@ These are audit targets, not assertions that every feature is absent.
 | List and place Mission Editor templates | No dedicated template tools found in inspected files | High | Search source and tests |
 | Discover weapon-specific settings | Payload tools exist; discovery not confirmed | High | Inspect payload schema, weapon DB and validation |
 | Validate payload weapon settings | Partial/unknown | High | Inspect set/replace payload implementation |
-| Find nearby road samples | No dedicated road query found in inspected files | Medium | Inspect terrain/spatial tools and data files |
+| Find nearby road samples | Added nearest-segment lookup for explicit DCS-metre road polylines on feature branch | Medium | Add a validated native DCS terrain-data adapter |
 | Create train groups | No dedicated train tool found | Medium | Inspect group authoring and unit type handling |
-| Per-unit terrain slope validation | Some spawn-conflict checks exist; slope parity unverified | High | Inspect terrain data and validator coverage |
+| Per-unit terrain slope validation | Added explicit JSON-grid sampler and slope threshold check on feature branch | High | Validate grid provenance and compare samples with real DCS maps |
 | Per-unit building/structure collision checks | Some spawn-conflict checks exist; full parity unverified | High | Inspect algorithms and fixtures |
 | DCS-native discovery of installed aircraft/ships/weapons/mods | Partial capabilities likely exist; scope unverified | High | Inventory catalogs, mod export, install report and tests |
 | Naval/carrier-specific mission authoring | Existing unit and route tools; exact deck/FARP semantics unverified | High | Add focused ship/carrier integration tests |
@@ -53,7 +53,7 @@ Do not implement a second tool that duplicates an existing tool unless it materi
 
 ## Standalone crossover status — 2026-10-16
 
-The BNS-DCS-MCP feature branch now registers **97 unique tools** across the initial standalone core and the first crossover batches. This is a count of the current BNS registry, not a claim of parity with the Frontline or DCS-MCP registries.
+The BNS-DCS-MCP feature branch now registers **100 unique tools on the terrain/road feature branch** across the initial standalone core and the first crossover batches. This is a count of the current BNS feature-branch registry, not a claim of parity with the Frontline or DCS-MCP registries.
 
 | Capability | Current BNS status | Remaining gap / caution |
 |---|---|---|

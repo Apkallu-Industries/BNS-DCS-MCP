@@ -6,9 +6,9 @@ The goal is to give Claude and other authorized MCP clients a stable DCS integra
 
 ## Status
 
-**Active implementation / first crossover PR. Not yet a release-ready DCS-tested server.**
+**Active implementation. Core crossover merged; terrain/road reference tools are in the next validation PR. Not yet a DCS-tested release.**
 
-The standalone TypeScript MCP host and first migrated capability batches are now implemented on [PR #1](https://github.com/Apkallu-Industries/BNS-DCS-MCP/pull/1). The current branch registers 97 unique tools, with CI covering TypeScript compilation and smoke tests. A Windows portable-package workflow now builds a private Node runtime plus native stdio launcher and verifies an MCP handshake. The executable and DCS runtime behavior are not release-verified until the Windows workflow passes and a real Windows/DCS test is completed.
+The standalone TypeScript MCP host and first migrated capability batches have been merged to main. The validated baseline exposes 97 unique tools; a follow-on branch adds three terrain/road reference tools, with CI enforcing the registry count and smoke tests. The Windows portable-package workflow builds a private Node runtime plus native stdio launcher, checks the MCP handshake, and publishes a ZIP artifact. The package is CI-verified, but real DCS runtime behavior still requires a Windows installation test.
 
 ## Design principles
 

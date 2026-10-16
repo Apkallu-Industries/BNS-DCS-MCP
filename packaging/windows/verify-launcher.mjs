@@ -7,7 +7,7 @@ const launcher = path.resolve(process.argv[2] ?? '');
 if (!launcher || !fs.existsSync(launcher)) {
   throw new Error('Usage: node verify-launcher.mjs <path-to-BNS-DCS-MCP.exe>');
 }
-const expected = 97;
+const expected = 100;
 const client = new Client({ name: 'bns-dcs-mcp-package-smoke', version: '0.1.0' }, { capabilities: {} });
 const transport = new StdioClientTransport({ command: launcher, args: [], stderr: 'pipe' });
 let stderr = '';

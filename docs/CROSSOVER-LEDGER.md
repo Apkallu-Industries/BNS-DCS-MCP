@@ -77,3 +77,19 @@ The branch now also includes two new BNS-side tool implementations:
 
 Smoke tests cover nested mission-option writes, dirty-state marking, rejection of unsafe option paths, tool registration and the existing mission validation path. GitHub Actions successfully built and tested commit
 `8df7d8ce9aa6808d372374971ebf843d2a4456a9`. The later docs-only ledger update is also expected to pass CI; check its run before merging.
+
+
+## Fourth migration batch — reusable groups and standalone diagnostics
+
+Added BNS-side template tools:
+
+- `list_templates` lists existing mission groups as reusable structural templates.
+- `add_template_group` clones a selected group into an already-existing coalition/country, assigns new group and unit IDs, offsets unit and route coordinates, preserves the group category and structure, and refuses duplicate group names. It does not invent country IDs or modify the source group.
+
+Added source modules for Lua script linting, mission SVG overview rendering, and structural .miz comparison. The standalone wrappers expose:
+
+- `lint_mission_scripts` — syntax and common Lua compatibility/hazard checks on supplied script text; scripts are not executed.
+- `render_mission_overview` — returns an SVG overview and summary for a loaded mission.
+- `diff_miz` — compares two open mission sessions.
+
+The Lua lint implementation uses the `fengari` dependency. CI is being checked against the latest commits before this batch is considered verified.

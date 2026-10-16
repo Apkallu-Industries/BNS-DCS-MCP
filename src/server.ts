@@ -6,6 +6,14 @@ import { missionTools } from "./tools/mission.js";
 import { groupTools } from "./tools/groups.js";
 import { waypointTools } from "./tools/waypoints.js";
 import { coordinateTools } from "./tools/coordinates.js";
+import { triggerTools } from "./tools/triggers.js";
+import { zoneTools } from "./tools/zones.js";
+import { weatherTools } from "./tools/weather.js";
+import { payloadTools } from "./tools/payload.js";
+import { rawTools } from "./tools/raw.js";
+import { geometryTools } from "./tools/geometry.js";
+import { briefingTools } from "./tools/briefing.js";
+import { historicalTools } from "./tools/historical.js";
 
 export const SERVER_NAME = "bns-dcs-mcp";
 export const SERVER_VERSION = "0.1.0";
@@ -17,6 +25,14 @@ export function createToolRegistry(): ToolRegistry {
   registry.registerAll(groupTools);
   registry.registerAll(waypointTools);
   registry.registerAll(coordinateTools);
+  registry.registerAll(triggerTools);
+  registry.registerAll(zoneTools);
+  registry.registerAll(weatherTools);
+  registry.registerAll(payloadTools);
+  registry.registerAll(rawTools);
+  registry.registerAll(geometryTools);
+  registry.registerAll(briefingTools);
+  registry.registerAll(historicalTools);
   return registry;
 }
 

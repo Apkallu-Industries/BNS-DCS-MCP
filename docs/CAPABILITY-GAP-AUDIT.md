@@ -50,3 +50,31 @@ Produce a machine-readable inventory with:
 - recommendation: reuse, improve, add, or defer.
 
 Do not implement a second tool that duplicates an existing tool unless it materially improves semantics, validation, or reliability.
+
+## Standalone crossover status — 2026-10-16
+
+The BNS-DCS-MCP feature branch now registers **97 unique tools** across the initial standalone core and the first crossover batches. This is a count of the current BNS registry, not a claim of parity with the Frontline or DCS-MCP registries.
+
+| Capability | Current BNS status | Remaining gap / caution |
+|---|---|---|
+| Read/write mission-wide options | Implemented: get_mission_options, get_mission_option, set_mission_option | Generic dotted-path access is available; confirm option semantics against real DCS-generated missions |
+| Mission group templates | Implemented: list existing groups as templates and clone a group with fresh IDs and position offset | Templates are currently sourced from an open mission, not a separate curated template library |
+| Weapon settings discovery | Implemented: inspect current mission aircraft payload and pylon CLSIDs | Not a global weapon database; installed-module availability and CLSID validity still need data-backed validation |
+| Payload editing | Migrated from Frontline | No complete per-aircraft weapon-store validation yet |
+| Road lookup | Not implemented | Requires a trustworthy terrain/road data source or installed DCS map data |
+| Train creation | Not implemented as a dedicated tool | General group authoring may not be sufficient for train-specific DCS semantics |
+| Terrain slope validation | Not implemented as a verified terrain-aware check | Do not claim slope validation until terrain data and fixtures exist |
+| Building/structure collision checks | Existing spawn-conflict checks migrated | Full map-aware collision parity remains unverified |
+| Installed aircraft/ship/weapon/mod discovery | Partial mission-side inspection only | Requires explicit local DCS install/catalog discovery |
+| Naval/carrier authoring | General ship/group/route authoring available in migrated tools | Carrier deck spots, parking, catapult/takeoff semantics need targeted tests |
+| Lua script linting | Implemented: syntax, compatibility and common hazards | Static lint is not a substitute for running mission scripts in DCS |
+| Mission overview and .miz diff | Implemented | Visual inspection and integration fixtures remain outstanding |
+
+### Current verification
+
+- CI has passed for the migrated core, mission options, weapon inventory, templates and standalone diagnostics, including a build/test run after adding a local Fengari declaration.
+- The smoke suite now asserts the registry has exactly 97 unique tool names. The latest commit that changes that contract must pass CI before the branch is considered green.
+- No Windows executable has been built or tested yet; no claim of working Claude Desktop installation should be made until packaging verification is added.
+- No DCS runtime integration test has been run from this repository. Real .miz fixtures and DCS Mission Editor/Simulator checks remain required.
+
+Next priority: make the latest 97-tool contract pass, then continue the terrain-aware validators and Windows packaging. Avoid importing Frontline campaign/database/JOC dependencies into the standalone service.

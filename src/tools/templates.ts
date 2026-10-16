@@ -75,10 +75,11 @@ export const templateTools: ToolDefinition[] = [
 
       clone.groupId = session.getNextGroupId();
       clone.name = args.new_group_name;
+      const nextUnitId = session.getNextUnitId();
       clone.x = targetX;
       clone.y = targetY;
-      for (const unit of asArray<any>(clone.units as any)) {
-        unit.unitId = session.getNextUnitId();
+      for (const [index, unit] of asArray<any>(clone.units as any).entries()) {
+        unit.unitId = nextUnitId + index;
         if (unit.name) unit.name = unit.name.replace(source.group.name, args.new_group_name);
         else unit.name = `${args.new_group_name} unit ${unit.unitId}`;
         if (typeof unit.x === "number") unit.x += dx;

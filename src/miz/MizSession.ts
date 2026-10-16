@@ -231,6 +231,38 @@ export class MizSession {
     return this.parsed.warehouses;
   }
 
+  /** Read the separate DCS options Lua table from the mission package. */
+  get options(): Record<string, any> {
+    return this.parsed.options;
+  }
+
+  /**
+   * Update a dotted path inside the DCS options table.
+   * Prototype-related keys are blocked because option paths are AI/user supplied.
+   */
+  setOption(optionPath: string, value: unknown): void {
+    const parts = optionPath.split('.').map(part => part.trim());
+    if (parts.length === 0 || parts.some(part =>
+      !part || part === '__proto__' || part === 'prototype' || part === 'constructor'
+    )) {
+      throw new Error('Invalid option path');
+    }
+
+    let target: Record<string, any> = this.parsed.options;
+    for (const part of parts.slice(0, -1)) {
+      const current = target[part];
+      if (current == null) {
+        target[part] = {};
+      } else if (typeof current !== 'object' || Array.isArray(current)) {
+        throw new Error(`Cannot traverse non-object option path segment: ${part}`);
+      }
+      target = target[part];
+    }
+
+    target[parts[parts.length - 1]] = value;
+    this.markDirty();
+  }
+
   get dictionary(): Record<string, string> {
     return this.parsed.dictionary;
   }

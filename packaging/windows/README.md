@@ -16,7 +16,7 @@ produces a ZIP artifact. The package layout is:
 - `app/package.json` — runtime dependency manifest
 
 The workflow runs the TypeScript build and tests, compiles the launcher with MSVC, then performs
-an MCP stdio handshake against the packaged executable and checks the exact 97-tool registry.
+an MCP stdio handshake against the packaged executable and checks the exact 100-tool registry.
 
 ## Claude Desktop configuration
 

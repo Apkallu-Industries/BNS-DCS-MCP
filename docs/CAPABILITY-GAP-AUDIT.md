@@ -74,7 +74,7 @@ The BNS-DCS-MCP feature branch now registers **97 unique tools** across the init
 
 - CI has passed for the migrated core, mission options, weapon inventory, templates and standalone diagnostics, including a build/test run after adding a local Fengari declaration.
 - The smoke suite now asserts the registry has exactly 97 unique tool names. The latest commit that changes that contract must pass CI before the branch is considered green.
-- No Windows executable has been built or tested yet; no claim of working Claude Desktop installation should be made until packaging verification is added.
+- The Windows workflow has successfully compiled the native launcher, assembled the portable package, completed an MCP stdio handshake reporting 97 unique tools, and uploaded the ZIP artifact. This verifies the packaged executable in CI, not a user installation or real DCS session.
 - No DCS runtime integration test has been run from this repository. Real .miz fixtures and DCS Mission Editor/Simulator checks remain required.
 
 Next priority: make the latest 97-tool contract pass, then continue the terrain-aware validators and Windows packaging. Avoid importing Frontline campaign/database/JOC dependencies into the standalone service.

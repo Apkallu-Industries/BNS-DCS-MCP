@@ -20,8 +20,19 @@ an MCP stdio handshake against the packaged executable and checks the exact 97-t
 
 ## Claude Desktop configuration
 
-After extracting the ZIP to a stable folder, add the following server entry to the Claude Desktop
-configuration file, replacing the example path with the actual absolute path:
+After extracting the ZIP to a stable folder, the included PowerShell helper can register the executable with detected Claude Desktop configurations while preserving unrelated MCP servers and backing up any previous bns-dcs-mcp entry. Run:
+
+```powershell
+.\\configure-claude.ps1 -InstallRoot 'C:\\BNS\\BNS-DCS-MCP'
+```
+
+To remove the registration and restore the previous entry, run:
+
+```powershell
+.\\configure-claude.ps1 -InstallRoot 'C:\\BNS\\BNS-DCS-MCP' -Remove
+```
+
+For manual configuration, use:
 
 ```json
 {

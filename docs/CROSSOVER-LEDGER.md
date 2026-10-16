@@ -38,3 +38,31 @@ HTTP/JOC, bridge, or runtime systems.
 - Keep this ledger updated as additional modules and their dependencies are
   crossed over. Review each module for external dependencies, filesystem side
   effects, database access, and Frontline-specific assumptions before enabling it.
+
+
+## Second migration batch — mission editing and validation
+
+Added the following additional modules from the same Frontline source revision:
+
+- `tools/triggers.ts` — mission trigger listing, creation and deletion
+- `tools/zones.ts` — mission zone listing and editing
+- `tools/weather.ts` — weather and mission start-time editing
+- `tools/payload.ts` — unit payload inspection and changes
+- `tools/raw.ts` — controlled raw Lua and ZIP-entry inspection/editing
+- `tools/geometry.ts` — point/zone geometry helpers
+- `tools/briefing.ts` — mission briefing read/write
+- `tools/historical.ts` — historical constraints and era validation
+- `tools/mission_authoring.ts` — map drawings, client slots, liveries, media inventory, release-readiness checks and warehouse summary
+- `tools/mission_integrity.ts` and `validation/MissionIntegrityChecks.ts` — spawn, script, resource, combat-readiness, slot and route integrity checks
+- `tools/dcs_export.ts` — local DCS export-status inspection
+- `tools/sam_sites.ts` — SAM-site authoring helpers
+
+The standalone server registers these tool families directly. Frontline-only campaign and database imports remain excluded.
+
+## CI evidence
+
+GitHub Actions completed a successful TypeScript build and smoke-test run for commit
+`850f2b4cbb91b8dcb23a01612188f55c3c6f80da`, which includes the first and second
+mission-editing batches through mission-authoring and mission-integrity registration.
+Subsequent SAM-site and DCS-export registration commits are running through CI and
+must be checked separately before declaring the latest branch state green.

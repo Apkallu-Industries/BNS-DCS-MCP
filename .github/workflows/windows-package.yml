@@ -1,0 +1,61 @@
+name: BNS DCS MCP Windows package
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-package:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install development dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build and test source
+        run: npm test
+      - name: Enable MSVC build environment
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Compile native launcher
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path packaging-out -Force | Out-Null
+          cl.exe /nologo /O2 /W4 /DUNICODE /D_UNICODE packaging/windows/BNS-DCS-MCP.c /link /OUT:packaging-out/BNS-DCS-MCP.exe
+      - name: Assemble portable package
+        shell: pwsh
+        run: |
+          $root = (Get-Location).Path
+          $pkg = Join-Path $root 'package-out'
+          New-Item -ItemType Directory -Path (Join-Path $pkg 'runtime') -Force | Out-Null
+          New-Item -ItemType Directory -Path (Join-Path $pkg 'app') -Force | Out-Null
+          Copy-Item 'packaging-out/BNS-DCS-MCP.exe' (Join-Path $pkg 'BNS-DCS-MCP.exe')
+          $node = (& node -p 'process.execPath').Trim()
+          Copy-Item $node (Join-Path $pkg 'runtime/node.exe')
+          Copy-Item 'dist' (Join-Path $pkg 'app/dist') -Recurse
+          Copy-Item 'package.json' (Join-Path $pkg 'app/package.json')
+          npm install --omit=dev --no-audit --no-fund --prefix (Join-Path $pkg 'app')
+          if (!(Test-Path (Join-Path $pkg 'app/node_modules/@modelcontextprotocol/sdk'))) {
+            throw 'MCP SDK production dependency was not packaged'
+          }
+      - name: Verify packaged executable over MCP stdio
+        shell: pwsh
+        run: node packaging/windows/verify-launcher.mjs package-out/BNS-DCS-MCP.exe
+      - name: Create portable ZIP
+        shell: pwsh
+        run: Compress-Archive -Path package-out/* -DestinationPath BNS-DCS-MCP-windows-x64.zip -Force
+      - name: Upload Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: BNS-DCS-MCP-windows-x64
+          path: BNS-DCS-MCP-windows-x64.zip
+          if-no-files-found: error

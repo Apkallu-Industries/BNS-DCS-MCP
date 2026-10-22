@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { SessionStore } from "./miz/SessionStore.js";
 import { ToolRegistry, type ToolContext } from "./tools/index.js";
+import { resolveSessionArgs, withSessionAliases } from "./tools/session_alias.js";
 import { missionTools } from "./tools/mission.js";
 import { groupTools } from "./tools/groups.js";
 import { waypointTools } from "./tools/waypoints.js";
@@ -60,10 +61,11 @@ export function createServer(): McpServer {
   const ctx: ToolContext = { sessions };
 
   for (const tool of createToolRegistry().list()) {
-    const shape = zodToJsonSchemaShape(tool.inputSchema);
+    const { shape, hasSession, sessionRequired } = withSessionAliases(zodToJsonSchemaShape(tool.inputSchema));
     server.tool(tool.name, tool.description, shape, async (args) => {
       try {
-        const result = await tool.handler(args, ctx);
+        const callArgs = hasSession ? resolveSessionArgs(args, sessions, sessionRequired) : args;
+        const result = await tool.handler(callArgs, ctx);
         return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);

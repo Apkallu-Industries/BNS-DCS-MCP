@@ -3,7 +3,11 @@ import assert from "node:assert/strict";
 import { LuaParser } from "../miz/LuaParser.js";
 import { MizSession } from "../miz/MizSession.js";
 import { SessionStore } from "../miz/SessionStore.js";
-import { createToolRegistry } from "../server.js";
+import { createServer, createToolRegistry } from "../server.js";
+import { resolveSessionArgs, SESSION_ALIASES, withSessionAliases } from "../tools/session_alias.js";
+import { z } from "zod";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { missionTools } from "../tools/mission.js";
 import { missionOptionTools } from "../tools/mission_options.js";
 import { nearestRoad, sampleGrid, type RoadReference, type TerrainGrid } from "../terrain/TerrainReference.js";
@@ -96,4 +100,62 @@ test("road lookup returns the closest point on a polyline segment", () => {
   assert.equal(result.road_id, "r1");
   assert.deepEqual(result.nearest_point, { x: 40, y: 0 });
   assert.equal(result.distance_m, 25);
+});
+
+test("session aliases: an alias maps onto session_id and the aliases never reach the handler", () => {
+  const sessions = new SessionStore();
+  const out = resolveSessionArgs({ sessionId: "abc", group_id: 7 }, sessions, true);
+  assert.deepEqual(out, { session_id: "abc", group_id: 7 });
+  const viaMiz = resolveSessionArgs({ miz_id: "def" }, sessions, true);
+  assert.deepEqual(viaMiz, { session_id: "def" });
+  const explicitWins = resolveSessionArgs({ session_id: "s1", sessionId: "s2" }, sessions, true);
+  assert.equal(explicitWins.session_id, "s1");
+});
+
+test("session aliases: missing id uses the only open session, else names the open ones", async () => {
+  const sessions = new SessionStore();
+  assert.throws(() => resolveSessionArgs({}, sessions, true), /No sessions are open/);
+  const a = await MizSession.create("Caucasus");
+  sessions.add(a);
+  assert.equal(resolveSessionArgs({}, sessions, true).session_id, a.sessionId);
+  const b = await MizSession.create("Caucasus");
+  sessions.add(b);
+  assert.throws(() => resolveSessionArgs({}, sessions, true), /2 sessions are open/);
+  // a tool whose session is optional (session_id OR path) is never auto-filled
+  assert.equal("session_id" in resolveSessionArgs({ path: "x.miz" }, sessions, false), false);
+});
+
+test("session aliases: MCP shape makes session_id optional and adds the aliases only for session tools", () => {
+  const withSession = withSessionAliases({ session_id: z.string(), group_id: z.number() });
+  assert.equal(withSession.hasSession, true);
+  assert.equal(withSession.sessionRequired, true);
+  assert.equal(withSession.shape.session_id.isOptional(), true);
+  for (const alias of SESSION_ALIASES) assert.ok(alias in withSession.shape, `missing alias ${alias}`);
+  const optional = withSessionAliases({ session_id: z.string().optional(), path: z.string().optional() });
+  assert.equal(optional.sessionRequired, false);
+  const none = withSessionAliases({ theatre: z.string() });
+  assert.equal(none.hasSession, false);
+  assert.deepEqual(Object.keys(none.shape), ["theatre"]);
+});
+
+test("MCP round trip: validate works with session_id dropped (alias, and single-session fallback)", async () => {
+  const server = createServer();
+  const [clientT, serverT] = InMemoryTransport.createLinkedPair();
+  await server.connect(serverT);
+  const client = new Client({ name: "alias-test", version: "0.0.0" });
+  await client.connect(clientT);
+  const text = (r: any) => JSON.parse(r.content[0].text);
+  const created = text(await client.callTool({ name: "new_miz", arguments: { theatre: "Caucasus" } }));
+  const viaAlias = await client.callTool({ name: "validate", arguments: { sessionId: created.session_id } });
+  assert.notEqual(viaAlias.isError, true, JSON.stringify(viaAlias.content));
+  assert.equal(text(viaAlias).valid, true);
+  const viaNone = await client.callTool({ name: "validate", arguments: {} });
+  assert.notEqual(viaNone.isError, true, JSON.stringify(viaNone.content));
+  assert.equal(text(viaNone).valid, true);
+  const listed = await client.listTools();
+  const v = listed.tools.find((t) => t.name === "validate");
+  assert.ok(v && "sessionId" in (v.inputSchema.properties ?? {}), "alias not advertised in the tool schema");
+  assert.equal(listed.tools.length, 100);
+  await client.close();
+  await server.close();
 });

@@ -33,6 +33,20 @@
 
 Use MCP stdio for Claude Desktop's local process launch. Do not require a permanent HTTP daemon for ordinary desktop use. If a future local HTTP bridge is added, bind to loopback by default and document authentication and port ownership.
 
+### Session argument resilience
+
+Every tool that takes `session_id` also accepts `sessionId` or `miz_id` (MCP boundary only, `src/tools/session_alias.ts`).
+A remote-device MCP relay was seen to strip an argument named `session_id` before it reached the server, so every
+session tool failed with "Required at session_id" even though the client sent it.
+
+Resolution order:
+1. `session_id`.
+2. An alias.
+3. For tools that require a session only: the single open session.
+
+Otherwise the call fails with an error naming the open sessions. Tools where the session is optional (`session_id` or
+`path`) are never auto-filled. Handlers still receive `session_id` unchanged.
+
 ## Reuse strategy
 
 Audit existing Frontline modules individually. Reuse only components that have clear boundaries and acceptable dependencies. The new server must not require Frontline campaign databases, campaign daemons, or Frontline-specific runtime services to start or author a mission.

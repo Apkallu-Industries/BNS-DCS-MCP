@@ -204,6 +204,12 @@ export const missionTools: ToolDefinition[] = [
           }
         }
 
+        // The Mission Editor refuses to save a group whose route has no waypoint with a locked time ("Route has no
+        // waypoints with locked time!"); found 2026-10-23 on script-built BNS test missions that passed this check.
+        if (points.length > 0 && !points.some((p: any) => p?.ETA_locked === true)) {
+          errors.push(`Group "${group.name}" route has no waypoint with locked time (set ETA_locked = true on WP1)`);
+        }
+
         if (entry.category === 'plane' || entry.category === 'helicopter') {
           const first = points[0];
           const parkingStart = first?.type === 'TakeOffParking' || first?.type === 'TakeOffParkingHot';

@@ -195,8 +195,12 @@ export const missionTools: ToolDefinition[] = [
             if (!u.payload || typeof u.payload !== 'object') {
               errors.push(`Air unit "${u.name}" is missing a payload table`);
             }
-            if (!u.callsign || typeof u.callsign !== 'object') {
-              errors.push(`Air unit "${u.name}" has an invalid callsign table`);
+            // NATO-style countries carry a callsign table ({1, 2, 3, name = "Enfield11"}); the Mission Editor writes a
+            // plain positive number for the others (Japan, Russia, ...: callsign = 101). Both are valid.
+            const cs = u.callsign;
+            const numericOk = typeof cs === 'number' && Number.isInteger(cs) && cs > 0;
+            if (!numericOk && (!cs || typeof cs !== 'object')) {
+              errors.push(`Air unit "${u.name}" has an invalid callsign (expected a callsign table or a positive number)`);
             }
             if (u.parking_id != null && (!Number.isInteger(u.parking_id) || u.parking_id <= 0)) {
               errors.push(`Air unit "${u.name}" parking_id must be a positive integer`);

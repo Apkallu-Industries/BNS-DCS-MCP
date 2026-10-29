@@ -37,6 +37,26 @@ test("new mission skeleton passes core DCS invariant validation", async () => {
   assert.equal(result.valid, true, JSON.stringify(result.errors));
 });
 
+test("validate accepts a callsign table (NATO style) and a numeric callsign (Japan, Russia), rejects anything else", async () => {
+  const sessions = new SessionStore();
+  const session = await MizSession.create("Caucasus");
+  sessions.add(session);
+  let gid = 900, uid = 900;
+  const flight = (name: string, callsign: unknown) => ({
+    groupId: ++gid, name, task: "Nothing",
+    route: { points: [{ alt: 1000, alt_type: "BARO", type: "Turning Point", action: "Turning Point", x: 0, y: 0, ETA_locked: true }] },
+    units: [{ unitId: ++uid, name: `${name} #1`, type: "P-51D", skill: "Excellent", x: 0, y: 0, alt: 1000, payload: {}, callsign }],
+  });
+  const m = session.mission as any;
+  m.coalition.blue.country = [{ id: 4, name: "UK", plane: { group: [flight("TABLE", { 1: 1, 2: 1, 3: 1, name: "Enfield11" })] } }];
+  m.coalition.red.country = [{ id: 28, name: "Japan", plane: { group: [
+    flight("NUMERIC", 101), flight("ZERO", 0), flight("TEXT", "101"), flight("MISSING", undefined)] } }];
+  const validate = missionTools.find((tool) => tool.name === "validate")!;
+  const result = await validate.handler({ session_id: session.sessionId }, { sessions });
+  const bad = result.errors.filter((e: string) => e.includes("invalid callsign"));
+  assert.deepEqual(bad.map((e: string) => e.match(/"([^"]+) #1"/)?.[1]).sort(), ["MISSING", "TEXT", "ZERO"], JSON.stringify(result.errors));
+});
+
 test("mission options tools safely read and update nested values", async () => {
   const sessions = new SessionStore();
   const session = await MizSession.create("Caucasus");
